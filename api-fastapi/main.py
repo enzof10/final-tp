@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, Form
 from model.handle_db import HandleDB
 from controller.users import Users
 from model.schemas import User
@@ -42,15 +42,12 @@ def signUp(user: User):
 
 
 @app.post("/sign-in", tags=["users"])
-def signIn(user: User):
+def signIn(password: str = Form(), username: str = Form()):
     try:
-        print(user)
+        print(password)
         db = HandleDB()
-        isValid = db.validateUser(user.Username, user.Password)
-        return {
-            'isValid': True if isValid["user"] else False,
-            'user' : isValid["user"] 
-        }
+        isValid = db.validateUser(username, password)
+        return isValid
     except Exception as inst:
         print(inst)
         return {

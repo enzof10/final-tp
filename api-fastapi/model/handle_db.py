@@ -53,10 +53,10 @@ class HandleDB():
         if (userValid):
             user = self.get_user(userValid[1], userValid[0])
             self._con.close()
-            return {'user': user}
+            return {'user': user, 'isValid': True}
         else:
             self._con.close()
-            return False
+            return {'user': {}, 'isValid': False}
 
     def __dell__(self):
         self._con.close()
