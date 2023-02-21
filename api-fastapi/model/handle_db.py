@@ -11,10 +11,10 @@ class HandleDB():
         data = self._cur.execute("SELECT * FROM Users")
         for user in data:
             users.append({
-                'Id' : user[0],
-                'Username' : user[1],
-                'Fullname' : user[2],
-                'isAdmin' : False if user[4] == 0 else True 
+                'Id': user[0],
+                'Username': user[1],
+                'Fullname': user[2],
+                'isAdmin': False if user[4] == 0 else True
             })
         return users
 
@@ -45,7 +45,18 @@ class HandleDB():
         self._con.commit()
         print(data_user)
         return self.get_user("", data_user["Id"])
-    
+
+    def validateUser(self, username, password):
+        data = self._cur.execute(
+            "SELECT * FROM Users where username = '{}' AND password = '{}' ".format(username, password))
+        userValid = data.fetchone()
+        if (userValid):
+            user = self.get_user(userValid[1], userValid[0])
+            self._con.close()
+            return {'user': user}
+        else:
+            self._con.close()
+            return False
 
     def __dell__(self):
         self._con.close()
