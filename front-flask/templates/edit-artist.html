@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/artists.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+    <div class="new-artist">
+        <form action="/update/artist/{{artist[0]}}" method="post" class="topBefore">
+            <h1 class="artistname">Edit artist</h1>
+            <input id="name" name="new-name" type="text" placeholder="Artist name" value="{{artist[1]}}">
+            <input id="submit" type="submit" value="Edit">
+        </form>
+    </div>
+</body>
+</html>
