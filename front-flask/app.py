@@ -1,13 +1,39 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import re
 import random
-
+import requests
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
-
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def main():
-    return render_template('signin.html')
+    userName = request.form['username']
+    print(userName)
+    error = ''
+    if userName:
+        password = request.form['password']
+        auth_data = {'username': userName, 'password': password}
+        resp = requests.post('http://localhost:8000/sign-in', data=auth_data)
+        resp = resp.json() 
+        print(resp)
+        error = resp["isValid"] 
+        if(resp["isValid"]):
+            return render_template('artists.html')
+    return render_template('signin.html', errorLogin = error)
+
+
+
+@app.route("/sign-up", methods=['POST'])
+def sign_up():
+    userName = request.form['username']
+    fullname = request.form['fullname']
+    password = request.form['password']
+    auth_data = {'username': userName, 'password': password, 'fullname' : fullname}
+    resp = requests.post('http://localhost:8000/sign-up', data=auth_data)
+    resp = resp.json() 
+    print(resp)
+    if(resp):
+        return render_template('artists.html')
+    return render_template('signin.html', errorLogin = error)
 
 # @app.route("/signup", methods = ['POST'])
 # def newUser():

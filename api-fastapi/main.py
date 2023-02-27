@@ -23,14 +23,15 @@ def getUsers():
 
 
 @app.post("/sign-up", tags=["users"])
-def signUp(user: User):
+def signUp(password: str = Form(), username: str = Form(), fullname : str = Form()):
     try:
-        newUser = Users({
-            'Username': user.Username,
-            'Fullname': user.Fullname,
-            'Password': user.Password,
-            'isAdmin': user.isAdmin,
+        newUser = Users( {
+            'Username': username,
+            'Fullname': fullname,
+            'Password': password,
+            'isAdmin': False,
         })
+        print(newUser)
         userSaved = newUser.save()
         return userSaved
     except Exception as inst:
