@@ -39,9 +39,9 @@
         <td>{{artist[0]}}</td>
         <td>{{artist[1]}}</td>
         <td>
-          <button href="/edit/artist/{{artist[0]}}">Edit</button>
+          <a href="/edit/artist/{{artist[0]}}"><button>Editar</button> </a>
         </td>
-        <td><button href="/delete/artist/{{artist[0]}}">Delete</button></td>
+        <td><a href="/delete/artist/{{artist[0]}}"><button>Eliminar</button></a></td>
       </tr>
       {% endfor %}
     </table>
