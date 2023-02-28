@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Response, Form
 from model.handle_db import HandleDB
 from controller.users import Users
 from model.schemas import User
+import re
 
 
 app = FastAPI()
@@ -25,15 +26,24 @@ def getUsers():
 @app.post("/sign-up", tags=["users"])
 def signUp(password: str = Form(), username: str = Form(), fullname : str = Form()):
     try:
-        newUser = Users( {
-            'Username': username,
-            'Fullname': fullname,
-            'Password': password,
-            'isAdmin': False,
-        })
-        print(newUser)
-        userSaved = newUser.save()
-        return userSaved
+        if len(username) < 4:
+            raise Exception("El nombre de usuario debe tener una longitud mayor a 4 caracteres")
+        if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+            raise Exception("La contraseña no cumple los requisitos")
+        if username and fullname and password:
+            newUser = Users( {
+                'Username': username,
+                'Fullname': fullname,
+                'Password': password,
+                'isAdmin': False,
+            })
+            userSaved = newUser.save()
+            return userSaved
+        else:
+            return{
+                "error": True,
+                "message" : "el nombre de usuario debe tener mas de 4 letras y la contraseña contener "
+        }
     except Exception as inst:
         print(inst)
         return {
@@ -55,3 +65,10 @@ def signIn(password: str = Form(), username: str = Form()):
             'message': str(inst),
             'error': True
         }
+
+
+@app.get("/artists", tags=['artists'])
+def get_artists():
+    db = HandleDB()
+    artists = db.get_artists() 
+    return artists 

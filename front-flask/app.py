@@ -6,8 +6,11 @@ app = Flask(__name__)
 app.secret_key = 'mysecretkey'
 @app.route("/", methods=['GET', 'POST'])
 def main():
+    return render_template('signin.html')
+
+@app.route("/sign-in", methods=['POST'])
+def sign_in():
     userName = request.form['username']
-    print(userName)
     error = ''
     if userName:
         password = request.form['password']
@@ -17,7 +20,10 @@ def main():
         print(resp)
         error = resp["isValid"] 
         if(resp["isValid"]):
-            return render_template('artists.html')
+            artists = requests.get('http://localhost:8000/artists')
+            artists = artists.json()
+            print(artists)
+            return render_template('artists.html', artists = artists)
     return render_template('signin.html', errorLogin = error)
 
 
@@ -31,8 +37,12 @@ def sign_up():
     resp = requests.post('http://localhost:8000/sign-up', data=auth_data)
     resp = resp.json() 
     print(resp)
-    if(resp):
-        return render_template('artists.html')
+    error = resp["message"]
+    if(not resp["error"]):
+        artists = requests.get('http://localhost:8000/artists')
+        artists = artists.json()
+        print(artists)
+        return render_template('artists.html', artists = artists)
     return render_template('signin.html', errorLogin = error)
 
 # @app.route("/signup", methods = ['POST'])

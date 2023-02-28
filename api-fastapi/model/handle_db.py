@@ -57,6 +57,15 @@ class HandleDB():
         else:
             self._con.close()
             return {'user': {}, 'isValid': False}
+        
+
+    def get_artists(self):
+        data = self._cur.execute("SELECT * FROM Artist")
+        data = data.fetchall()
+        self._con.close()
+        print("data artists")
+        print(data)
+        return data
 
     def __dell__(self):
         self._con.close()
