@@ -87,6 +87,14 @@ class HandleDB():
         algo = algo.fetchall()
         self._con.commit()
         return self.get_artists(None, idArtist)[0]
+    
+    def get_albums_by_artist(self, artistId):
+        data = self._cur.execute(
+            "SELECT * FROM Album WHERE ArtistId = '{}' ".format(artistId))
+        data = data.fetchall()
+        self._con.commit()
+        self._con.close()
+        return data
 
     def __dell__(self):
         self._con.close()

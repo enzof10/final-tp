@@ -64,5 +64,15 @@ def edit_artist(name):
     return render_template('edit-artist.html', artist = artist[0])
 
 
+@app.route("/artists/<artisID>/albums", methods=['GET'])
+def artist_songs(artisID):
+    print(artisID)
+    artistName = request.args.get('artisName')
+    albums = requests.get('http://localhost:8000/artists/' + artisID +  "/albums")
+    albums = albums.json()
+    print(albums)
+    return render_template('artist_albums.html', albums = albums, artistName = artistName )
+
+
 if __name__ == '__main__':
     app.run(debug=True)

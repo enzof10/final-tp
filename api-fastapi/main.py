@@ -92,6 +92,12 @@ def delete_artist(id_artist: int):
 
     return {"error": "false", "message": "artist deleted"}
 
+@app.get("/artists/{id_artist}/albums", tags=['artists'])
+def get_albums_by_artist(id_artist: int):
+    db = HandleDB()
+    albums = db.get_albums_by_artist(id_artist)
+    return albums
+
 
 @app.post("/artists", tags=['artists'])
 def create_or_update_artist(artistName: str, artistId : int = None):
@@ -106,5 +112,5 @@ def create_or_update_artist(artistName: str, artistId : int = None):
         return {"error": "false", "message": "artist created", "artist": artist}
 
 
-
+# albums
 

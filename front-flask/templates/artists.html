@@ -79,7 +79,7 @@
       document
         .getElementById("artists_table")
         .addEventListener("click", (e) => {
-          console.log("e.target: ", e.target);
+          console.log("e.target: ", e.target.parentElement.firstChild.value);
           const isDelete = e.target.getAttribute("name") === "delete_artist";
           if (e.target.tagName === "BUTTON" && isDelete) {
             const artistID = e.target.getAttribute("artistid");
@@ -97,6 +97,12 @@
                 window.location.reload();
               });
             e.preventDefault();
+          }
+          else{
+            const artistID = e.target.parentElement.children[0].textContent
+            const artistName = e.target.parentElement.children[1].textContent
+            console.log('artistName: ', artistName);
+            window.location = `/artists/${artistID}/albums?artisName=${artistName}`
           }
         });
 
