@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'mysecretkey'
 @app.route("/", methods=['GET', 'POST'])
 def main():
-    return render_template('signin.html')
+    return redirect('http://localhost:5000/sign-in', code=302)
 
 @app.route("/sign-in", methods=['POST'])
 def sign_in():
@@ -17,13 +17,11 @@ def sign_in():
         auth_data = {'username': userName, 'password': password}
         resp = requests.post('http://localhost:8000/sign-in', data=auth_data)
         resp = resp.json() 
+        print("auth")
         print(resp)
         error = resp["isValid"] 
         if(resp["isValid"]):
-            artists = requests.get('http://localhost:8000/artists')
-            artists = artists.json()
-            print(artists)
-            return render_template('artists.html', artists = artists)
+            return redirect('artists',code=302)
     return render_template('signin.html', errorLogin = error)
 
 
@@ -45,135 +43,18 @@ def sign_up():
         return render_template('artists.html', artists = artists)
     return render_template('signin.html', errorLogin = error)
 
-# @app.route("/signup", methods = ['POST'])
-# def newUser():
-#     cur, conn  = get_db_connection()
-#     try:
-#         with conn:
-#             username = request.form['username']
-#             fullname = request.form['fullname']
-#             password = request.form['password']
 
+@app.route("/artists", methods=['GET'])
+def artists():
+    artistName = request.args.get('search')
+    if(artistName != ""):
+        artists = requests.get('http://localhost:8000/artists' + "?search=" + artistName)
+    else:
+        artists = requests.get('http://localhost:8000/artists')
+    artists = artists.json()
+    print(artists)
+    return render_template('artists.html', artists = artists)
 
-#             if len(username) < 4:
-#                  raise Exception("El nombre de usuario debe tener una longitud mayor a 4 caracteres")
-#             if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
-#                  raise Exception("La contraseña no cumple los requisitos")
-            
-#             if username and fullname and password:
-#                 user = username, fullname, password, 0
-
-#                 create_user(conn, cur, user)
-
-#                 return redirect('/users')
-#             else:
-#                 raise Exception("Debes ingresar todos los campos")
-#     except Exception:
-#         return {
-#             'error': True,
-#             'message': f'Algo salió mal'
-#         }
-
-# @app.route("/login", methods = ['POST'])
-# def login():
-#     cur, conn  = get_db_connection()
-#     with conn:
-#         username = request.form['username']
-#         password = request.form['password']
-
-#         user = logIn(conn, cur, username, password)
-#         isLogged = True if user else False
-
-#         if isLogged:
-#             return redirect('/search')
-#         else:
-#             return render_template('signin.html')
-
-# @app.route("/users")
-# def getUsers():
-#     cur, conn  = get_db_connection()
-#     users = cur.execute('SELECT * FROM Users')
-#     return render_template('users.html', users=users)
-
-# @app.route("/artist", methods=['GET', 'POST'])
-# def getArtist():
-#     cur, conn  = get_db_connection()
-#     lastId = getLastRegister(conn, cur, 'Artist', 'ArtistId')[0]
-
-#     if request.method == 'GET':
-#         cur.execute('SELECT * FROM Artist')
-#         artists = cur.fetchall()
-
-#         return render_template('artists.html', artists=artists)
-  
-#     elif request.method == 'POST':
-#         name = request.form['artist-name']
-#         artist = lastId + 1, name
-
-#         create_artist(conn, cur, artist)
-#         flash(f'Artist {name} added succesfully')
-#         return redirect(url_for('getArtist'))
-
-# @app.route("/edit/artist/<string:id>")
-# def editArtist(id):
-#     cur, conn  = get_db_connection()
-#     cur.execute(f'SELECT * FROM Artist WHERE ArtistId = {id}')
-#     artist = cur.fetchone()
-
-#     return render_template('edit-artist.html', artist=artist)
-
-# @app.route("/update/artist/<string:id>", methods=['POST'])
-# def updateArtist(id):
-#     if request.method == 'POST':
-#         cur, conn  = get_db_connection()
-#         newName = request.form['new-name']
-#         data = (newName, id)
-#         query = (f'''
-#             Update Artist 
-#             set Name = ? 
-#             WHERE ArtistId = ?
-#             ''')
-#         cur.execute(query, data)
-#         conn.commit()
-#         flash(f'Artist {newName} updated successfully')
-#         return redirect(url_for('getArtist'))
-
-
-# @app.route("/delete/artist/<string:id>")
-# def deleteArtist(id):
-#     cur, conn  = get_db_connection()
-#     cur.execute(f'DELETE FROM Artist WHERE ArtistId = {id}')
-#     conn.commit()
-#     flash(f'Artist with id {id} removed succesfully')
-#     return redirect(url_for('getArtist'))
-
-
-
-# @app.route("/search", methods=['GET', 'POST'])
-# def searchImages():
-    cur, conn  = get_db_connection()
-    album = albumAndArtist(conn, cur)
-    
-    myList = []
-
-    for artist in album:
-        data = ('id', 'album', 'artist', 'track')
-        if len(artist) == len(data):
-            res = {data[i] : artist[i] for i, _ in enumerate(artist)}
-            myList.append(res)
-
-    filteredData = []
-
-    if request.method == 'POST':
-        filter = request.form['filtering']
-        for album in myList:
-            filter = filter.upper()
-            if album['album'].upper().startswith(filter) or album['artist'].upper().startswith(filter) or album['track'].upper().startswith(filter):
-
-                filteredData.append(album)    
-
-
-    return render_template('finder.html', myList=myList, filteredData=filteredData)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -27,14 +27,16 @@
         />
         <button id="submit-new-artist" value="Add">añadir</button>
       </form>
-      <form class="topBefore">
+      <form class="topBefore" method="get" action="artists">
         <input
           id="search-name"
-          name="search-artist-name"
+          name="search"
           type="text"
           placeholder="buscar artista"
         />
-        <button id="submit" type="submit" value="search">buscar</button>
+        <button id="submit-search-name"  type="submit" value="search">
+          buscar
+        </button>
       </form>
     </div>
     <h1>Tabla de artistas:</h1>
@@ -62,47 +64,46 @@
       </tr>
       {% endfor %}
     </table>
-    <ul id="artlist"></ul>
     <script>
-      document
-        .getElementById("artists_table")
-        .addEventListener("click", (e) => {
-          if (e.target.tagName === "BUTTON") {
-            const artistID = e.target.getAttribute("artistid");
-            const nameArtist = e.target.getAttribute("nameArtist");
+        document
+          .getElementById("artists_table")
+          .addEventListener("click", (e) => {
+            if (e.target.tagName === "BUTTON") {
+              const artistID = e.target.getAttribute("artistid");
+              const nameArtist = e.target.getAttribute("nameArtist");
 
-            fetch(`http://localhost:8000/artists/${artistID}`, {
-              method: "DELETE",
+              fetch(`http://localhost:8000/artists/${artistID}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+                .then((res) => res.json())
+                .then((res) => {
+                  alert(nameArtist + " fue eliminado con exito");
+                  window.location.reload();
+                });
+            }
+            e.preventDefault();
+          });
+
+        document
+          .getElementById("submit-new-artist")
+          .addEventListener("click", (e) => {
+            e.preventDefault();
+            const artistName = document.getElementById("search-name").value;
+            fetch(`http://localhost:8000/artists?artistName=${artistName}`, {
+              method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
             })
               .then((res) => res.json())
               .then((res) => {
-                alert(nameArtist + " fue eliminado con exito");
+                alert(artistName + " fue creado con exito");
                 window.location.reload();
               });
-          }
-          e.preventDefault();
-        });
-
-      document
-        .getElementById("submit-new-artist")
-        .addEventListener("click", (e) => {
-          e.preventDefault();
-          const artistName = document.getElementById("name-new-artist").value;
-          fetch(`http://localhost:8000/artists?artistName=${artistName}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((res) => {
-              alert(artistName + " fue creado con exito");
-              window.location.reload();
-            });
-        });
+          });
     </script>
   </body>
 </html>
