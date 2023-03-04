@@ -1,20 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/artists.css') }}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <title>Document</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/artists.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+      integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+      crossorigin="anonymous"
+    />
+    <title>Editar artista</title>
+  </head>
+  <body>
     <div class="new-artist">
-        <form action="/update/artist/{{artist[0]}}" method="post" class="topBefore">
-            <h1 class="artistname">Edit artist</h1>
-            <input id="name" name="new-name" type="text" placeholder="Artist name" value="{{artist[1]}}">
-            <input id="submit" type="submit" value="Edit">
-        </form>
+      <h1 class="artistname">Editar artista</h1>
+      <form>
+        <input
+          idArtist="{{artist[0]}}"
+          id="new-name-artist"
+          name="new-name"
+          type="text"
+          placeholder="nombre de artista"
+          value="{{artist[1]}}"
+        />
+        <input id="submit-new-name" type="submit" value="guardar" />
+      </form>
     </div>
-</body>
+    <script>
+      document
+        .getElementById("submit-new-name")
+        .addEventListener("click", (e) => {
+          const newName = document.getElementById("new-name-artist").value;
+          const artistId = document
+            .getElementById("new-name-artist")
+            .getAttribute("idArtist");
+          fetch(
+            `http://localhost:8000/artists?artistName=${newName}&artistId=${artistId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((res) => {
+              alert(`el artista "${newName}"" fue editado con exito`);
+              window.location = "/artists";
+            });
+          e.preventDefault();
+        });
+    </script>
+  </body>
 </html>

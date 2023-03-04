@@ -8,20 +8,22 @@ app.secret_key = 'mysecretkey'
 def main():
     return redirect('http://localhost:5000/sign-in', code=302)
 
-@app.route("/sign-in", methods=['POST'])
+@app.route("/sign-in", methods=['POST', "GET"])
 def sign_in():
-    userName = request.form['username']
     error = ''
-    if userName:
-        password = request.form['password']
-        auth_data = {'username': userName, 'password': password}
-        resp = requests.post('http://localhost:8000/sign-in', data=auth_data)
-        resp = resp.json() 
-        print("auth")
-        print(resp)
-        error = resp["isValid"] 
-        if(resp["isValid"]):
-            return redirect('artists',code=302)
+    if(request.method == "POST"):
+        userName = request.form['username']
+        if userName:
+            password = request.form['password']
+            auth_data = {'username': userName, 'password': password}
+            resp = requests.post('http://localhost:8000/sign-in', data=auth_data)
+            resp = resp.json() 
+            print("auth")
+            print(resp)
+            error = resp["isValid"] 
+            if(resp["isValid"]):
+                session["user"] = resp["user"]["Username"]
+                return redirect('artists',code=302)
     return render_template('signin.html', errorLogin = error)
 
 
@@ -34,26 +36,32 @@ def sign_up():
     auth_data = {'username': userName, 'password': password, 'fullname' : fullname}
     resp = requests.post('http://localhost:8000/sign-up', data=auth_data)
     resp = resp.json() 
+    print("resp sign-up")
     print(resp)
     error = resp["message"]
     if(not resp["error"]):
-        artists = requests.get('http://localhost:8000/artists')
-        artists = artists.json()
-        print(artists)
-        return render_template('artists.html', artists = artists)
+        session["user"] = resp["user"]["name"]
+        return redirect('artists.html', code=302)
     return render_template('signin.html', errorLogin = error)
 
 
 @app.route("/artists", methods=['GET'])
 def artists():
     artistName = request.args.get('search')
-    if(artistName != ""):
+    if(artistName != "" and artistName):
         artists = requests.get('http://localhost:8000/artists' + "?search=" + artistName)
     else:
         artists = requests.get('http://localhost:8000/artists')
     artists = artists.json()
-    print(artists)
     return render_template('artists.html', artists = artists)
+
+@app.route("/artists/<name>/edit", methods=['GET'])
+def edit_artist(name):
+    print(name)
+    artist = requests.get('http://localhost:8000/artists' + "?search=" + name)
+    artist = artist.json()
+    print(artist[0])
+    return render_template('edit-artist.html', artist = artist[0])
 
 
 if __name__ == '__main__':

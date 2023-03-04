@@ -56,11 +56,12 @@ class HandleDB():
             self._con.close()
             return {'user': {}, 'isValid': False}
 
-    def get_artists(self, search):
+    def get_artists(self, search, artistID = None):
         data = self._cur.execute(
-            "SELECT * FROM Artist WHERE Name LIKE '%{}%' ORDER BY ArtistId DESC ".format(search))
+            "SELECT * FROM Artist WHERE Name LIKE '%{}%' OR ArtistId = '{}' ORDER BY ArtistId  DESC ".format(search, artistID))
         data = data.fetchall()
         self._con.close()
+        print(data)
         return data
 
     def delete_artist(self, artistId):
@@ -74,9 +75,18 @@ class HandleDB():
     def create_artist(self, nameArtist):
         algo = self._cur.execute(
             "INSERT INTO Artist (Name) VALUES('{}')" .format(nameArtist))
+        algo = algo.fetchone()
+        self._con.commit()
+        print("algo")
+        print(algo)
+        return self.get_artists(nameArtist)[0]
+
+    def edit_artist(self, nameArtist, idArtist):
+        algo = self._cur.execute(
+            "UPDATE Artist SET name = '{}'  WHERE ArtistId = '{}' " .format(nameArtist, idArtist))
         algo = algo.fetchall()
         self._con.commit()
-        return algo
+        return self.get_artists(None, idArtist)[0]
 
     def __dell__(self):
         self._con.close()

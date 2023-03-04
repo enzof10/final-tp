@@ -94,9 +94,17 @@ def delete_artist(id_artist: int):
 
 
 @app.post("/artists", tags=['artists'])
-def create_artist(artistName: str):
+def create_or_update_artist(artistName: str, artistId : int = None):
     db = HandleDB()
-    artist = db.create_artist(artistName)
-    return {"error": "false", "message": "artist deleted", "artist": artist}
+    if(artistId):
+        artist = artistId
+        print(artistId, artistName)
+        artist = db.edit_artist(artistName, artistId)
+        return {"error": "false", "message": "artist edited", "artist": artist}
+    else:
+        artist = db.create_artist(artistName)
+        return {"error": "false", "message": "artist created", "artist": artist}
+
+
 
 
