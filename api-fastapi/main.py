@@ -77,13 +77,13 @@ def signIn(password: str = Form(), username: str = Form()):
 
 
 @app.get("/artists", tags=['artists'])
-def get_artists():
+def get_artists(search : str = ""):
     db = HandleDB()
-    artists = db.get_artists()
+    artists = db.get_artists(search)
     return artists
 
 
-@app.post("/artists/{id_artist}", tags=['artists'])
+@app.delete("/artists/{id_artist}", tags=['artists'])
 def delete_artist(id_artist: int):
     print(id_artist)
     db = HandleDB()
@@ -91,5 +91,12 @@ def delete_artist(id_artist: int):
     print(artists)
 
     return {"error": "false", "message": "artist deleted"}
+
+
+@app.post("/artists", tags=['artists'])
+def create_artist(artistName: str):
+    db = HandleDB()
+    artist = db.create_artist(artistName)
+    return {"error": "false", "message": "artist deleted", "artist": artist}
 
 

@@ -13,3 +13,9 @@ td, th {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
+
+.artists_inputs{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -19,7 +19,6 @@ class HandleDB():
         return users
 
     def get_user(self, userName="", Id=0):
-        print(Id)
         userDict = {}
         data = self._cur.execute(
             "SELECT Id, Username, Fullname, Password, isAdmin FROM Users where username = '{}' OR id = '{}' ".format(userName, Id))
@@ -43,7 +42,6 @@ class HandleDB():
                 data_user["isAdmin"]
             ))
         self._con.commit()
-        print(data_user)
         return self.get_user("", data_user["Id"])
 
     def validateUser(self, username, password):
@@ -57,22 +55,28 @@ class HandleDB():
         else:
             self._con.close()
             return {'user': {}, 'isValid': False}
-        
 
-    def get_artists(self):
-        data = self._cur.execute("SELECT * FROM Artist")
+    def get_artists(self, search):
+        data = self._cur.execute(
+            "SELECT * FROM Artist WHERE Name LIKE '%{}%' ORDER BY ArtistId DESC ".format(search))
         data = data.fetchall()
         self._con.close()
         return data
-    
+
     def delete_artist(self, artistId):
-        data = self._cur.execute("DELETE FROM Artist WHERE ArtistId = '{}' ".format(artistId))
+        data = self._cur.execute(
+            "DELETE FROM Artist WHERE ArtistId = '{}' ".format(artistId))
         data = data.fetchall()
         self._con.commit()
         self._con.close()
         return data
-    
 
+    def create_artist(self, nameArtist):
+        algo = self._cur.execute(
+            "INSERT INTO Artist (Name) VALUES('{}')" .format(nameArtist))
+        algo = algo.fetchall()
+        self._con.commit()
+        return algo
 
     def __dell__(self):
         self._con.close()

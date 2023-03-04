@@ -14,14 +14,27 @@
       integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
       crossorigin="anonymous"
     />
-    <title>Search</title>
+    <title>Artistas</title>
   </head>
   <body>
-    <div class="new-artist">
-      <form action="/artist" method="post" class="topBefore">
-        <h1 class="artistname">Añadir nuevo artista</h1>
-        <input id="name" name="artist-name" type="text" placeholder="Nombre" />
-        <input id="submit" type="submit" value="Add" />
+    <div class="artists_inputs">
+      <form id="new-artist" class="topBefore">
+        <input
+          id="name-new-artist"
+          name="artist-name"
+          type="text"
+          placeholder="agregar artista"
+        />
+        <button id="submit-new-artist" value="Add">añadir</button>
+      </form>
+      <form class="topBefore">
+        <input
+          id="search-name"
+          name="search-artist-name"
+          type="text"
+          placeholder="buscar artista"
+        />
+        <button id="submit" type="submit" value="search">buscar</button>
       </form>
     </div>
     <h1>Tabla de artistas:</h1>
@@ -59,19 +72,36 @@
             const nameArtist = e.target.getAttribute("nameArtist");
 
             fetch(`http://localhost:8000/artists/${artistID}`, {
-              method: "POST",
-              headers:{
-                "Content-Type": "application/json"
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
               },
             })
               .then((res) => res.json())
               .then((res) => {
-                console.log("res: ", res);
                 alert(nameArtist + " fue eliminado con exito");
                 window.location.reload();
               });
           }
           e.preventDefault();
+        });
+
+      document
+        .getElementById("submit-new-artist")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          const artistName = document.getElementById("name-new-artist").value;
+          fetch(`http://localhost:8000/artists?artistName=${artistName}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => res.json())
+            .then((res) => {
+              alert(artistName + " fue creado con exito");
+              window.location.reload();
+            });
         });
     </script>
   </body>
