@@ -25,7 +25,7 @@
       </form>
     </div>
     <h1>Tabla de artistas:</h1>
-    <table>
+    <table id="artists_table">
       <tr>
         <!-- Table Row - 1 -->
         <th>ID</th>
@@ -39,12 +39,40 @@
         <td>{{artist[0]}}</td>
         <td>{{artist[1]}}</td>
         <td>
-          <a href="/edit/artist/{{artist[0]}}"><button>Editar</button> </a>
+          <button artistId="{{artist[0]}}">Editar</button>
         </td>
-        <td><a href="/delete/artist/{{artist[0]}}"><button>Eliminar</button></a></td>
+        <td>
+          <button artistId="{{artist[0]}}" nameArtist="{{artist[1]}}">
+            Eliminar
+          </button>
+        </td>
       </tr>
       {% endfor %}
     </table>
     <ul id="artlist"></ul>
+    <script>
+      document
+        .getElementById("artists_table")
+        .addEventListener("click", (e) => {
+          if (e.target.tagName === "BUTTON") {
+            const artistID = e.target.getAttribute("artistid");
+            const nameArtist = e.target.getAttribute("nameArtist");
+
+            fetch(`http://localhost:8000/artists/${artistID}`, {
+              method: "POST",
+              headers:{
+                "Content-Type": "application/json"
+              },
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                console.log("res: ", res);
+                alert(nameArtist + " fue eliminado con exito");
+                window.location.reload();
+              });
+          }
+          e.preventDefault();
+        });
+    </script>
   </body>
 </html>

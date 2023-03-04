@@ -3,10 +3,18 @@ from model.handle_db import HandleDB
 from controller.users import Users
 from model.schemas import User
 import re
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/users", tags=["users"])
 def getUsers():
@@ -24,14 +32,15 @@ def getUsers():
 
 
 @app.post("/sign-up", tags=["users"])
-def signUp(password: str = Form(), username: str = Form(), fullname : str = Form()):
+def signUp(password: str = Form(), username: str = Form(), fullname: str = Form()):
     try:
         if len(username) < 4:
-            raise Exception("El nombre de usuario debe tener una longitud mayor a 4 caracteres")
+            raise Exception(
+                "El nombre de usuario debe tener una longitud mayor a 4 caracteres")
         if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
             raise Exception("La contraseña no cumple los requisitos")
         if username and fullname and password:
-            newUser = Users( {
+            newUser = Users({
                 'Username': username,
                 'Fullname': fullname,
                 'Password': password,
@@ -40,10 +49,10 @@ def signUp(password: str = Form(), username: str = Form(), fullname : str = Form
             userSaved = newUser.save()
             return userSaved
         else:
-            return{
+            return {
                 "error": True,
-                "message" : "el nombre de usuario debe tener mas de 4 letras y la contraseña contener "
-        }
+                "message": "el nombre de usuario debe tener mas de 4 letras y la contraseña contener "
+            }
     except Exception as inst:
         print(inst)
         return {
@@ -70,5 +79,17 @@ def signIn(password: str = Form(), username: str = Form()):
 @app.get("/artists", tags=['artists'])
 def get_artists():
     db = HandleDB()
-    artists = db.get_artists() 
-    return artists 
+    artists = db.get_artists()
+    return artists
+
+
+@app.post("/artists/{id_artist}", tags=['artists'])
+def delete_artist(id_artist: int):
+    print(id_artist)
+    db = HandleDB()
+    artists = db.delete_artist(id_artist)
+    print(artists)
+
+    return {"error": "false", "message": "artist deleted"}
+
+

@@ -63,9 +63,16 @@ class HandleDB():
         data = self._cur.execute("SELECT * FROM Artist")
         data = data.fetchall()
         self._con.close()
-        print("data artists")
-        print(data)
         return data
+    
+    def delete_artist(self, artistId):
+        data = self._cur.execute("DELETE FROM Artist WHERE ArtistId = '{}' ".format(artistId))
+        data = data.fetchall()
+        self._con.commit()
+        self._con.close()
+        return data
+    
+
 
     def __dell__(self):
         self._con.close()
