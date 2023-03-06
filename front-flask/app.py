@@ -20,9 +20,7 @@ def sign_in():
             auth_data = {'username': userName, 'password': password}
             resp = requests.post('http://localhost:8000/sign-in', data=auth_data)
             resp = resp.json() 
-            print("auth")
-            print(resp)
-            error = resp["isValid"] 
+            error =  "contraseña o usuario invalido" if not resp["isValid"] else  ""  
             if(resp["isValid"]):
                 session["user"] = resp["user"]["Username"]
                 print("session[user]")
@@ -37,14 +35,18 @@ def sign_up():
     userName = request.form['username']
     fullname = request.form['fullname']
     password = request.form['password']
+    passwordConfirm = request.form['confirm-password']
+    if(passwordConfirm != password):
+        return render_template('signin.html', errorLogin = "las contraseñas no coinciden")
     auth_data = {'username': userName, 'password': password, 'fullname' : fullname}
-    resp = requests.post('http://localhost:8000/sign-up', data=auth_data)
+    resp = requests.post('http://localhost:8000/signin', data=auth_data)
     resp = resp.json() 
-    error = resp["message"]
+    error =  "contraseña o usuario invalido" if not resp["isValid"] else  ""  
     if(not resp["error"]):
         session["user"] = resp["user"]["name"]
         return redirect('artists', code=302)
-    return render_template('signin.html', errorLogin = error)
+    return render_template('signin.html', error = error)
+
 
 
 @app.route("/artists", methods=['GET'])

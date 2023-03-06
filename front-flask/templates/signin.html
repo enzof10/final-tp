@@ -28,9 +28,7 @@
                         <div class="group">
                             <input type="submit" class="button" value="Sign In" id="sign-in-button">
                         </div>
-                    {% if not errorLogin %}
-                    <h1> contraseña o usuario invalido </h1> 
-                    {% endif %}
+                    <h1> {{ errorLogin }} </h1> 
                     </div>
                 </form>
         <form action="http://localhost:5000/sign-up" method="post">
@@ -49,7 +47,7 @@
                 </div>
                 <div class="group">
                     <label for="pass" class="label">Repita contraseña</label>
-                    <input id="pass" name="confirm-password" type="confirm-password" class="input" data-type="password">
+                    <input id="pass" name="confirm-password" type="password" class="input" data-type="password">
                 </div>
                 <div class="group">
                     <input type="submit" class="button" value="Sign Up">
